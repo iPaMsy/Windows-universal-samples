@@ -21,7 +21,7 @@ namespace winrt::SDKTemplate::implementation
         $safeitemname$();
 
     private:
-        SDKTemplate::MainPage rootPage{ MainPage::Current() };
+        SDKTemplate::MainPage rootPage{ SDKTemplate::implementation::MainPage::Current() };
     };
 }
 

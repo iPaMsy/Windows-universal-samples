@@ -4,7 +4,6 @@ languages:
 - csharp
 - cpp
 - cppcx
-- cppwinrt
 products:
 - windows
 - windows-uwp

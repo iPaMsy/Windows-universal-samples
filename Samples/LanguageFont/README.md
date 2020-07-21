@@ -3,7 +3,7 @@ page_type: sample
 languages:
 - csharp
 - cpp
-- cppwinrt
+- cppcx
 products:
 - windows
 - windows-uwp
@@ -61,7 +61,7 @@ To obtain information about Microsoft Visual Studio and the tools for developing
 
 ### Related samples
 
-* [LanguageFont sample](/archived/LanguageFont/) for C++/CX and JavaScript (archived)
+* [LanguageFont sample](/archived/LanguageFont/) for JavaScript (archived)
 
 ## System requirements
 

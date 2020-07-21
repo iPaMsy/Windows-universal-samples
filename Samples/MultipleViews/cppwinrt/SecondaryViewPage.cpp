@@ -196,76 +196,71 @@ namespace winrt::SDKTemplate::implementation
     Storyboard SecondaryViewPage::CreateEnterAnimation()
     {
         Storyboard enterAnimation;
+        Storyboard::SetTarget(enterAnimation, LayoutRoot());
 
-        // Use the AnimationDescription object if available. Otherwise, return an empty storyboard (no animation).
-        if (Windows::Foundation::Metadata::ApiInformation::IsTypePresent(L"Windows.UI.Core.AnimationMetrics.AnimationDescription"))
+        AnimationDescription ad(AnimationEffect::EnterPage, AnimationEffectTarget::Primary);
+        for (unsigned int i = 0; i < LayoutRoot().Children().Size(); i++)
         {
-            Storyboard::SetTarget(enterAnimation, LayoutRoot());
+            // Add a render transform to the existing one just for animations
+            auto element = LayoutRoot().Children().GetAt(i);
+            TransformGroup tg;
+            tg.Children().Append(TranslateTransform());
+            tg.Children().Append(element.RenderTransform());
+            element.RenderTransform(tg);
 
-            AnimationDescription ad(AnimationEffect::EnterPage, AnimationEffectTarget::Primary);
-            for (unsigned int i = 0; i < LayoutRoot().Children().Size(); i++)
+            // Calculate the stagger for each animation. Note that this has a max
+            TimeSpan delay = std::min(std::chrono::duration_cast<TimeSpan>(ad.StaggerDelay() * i * ad.StaggerDelayFactor()), ad.DelayLimit());
+
+            for (auto description : ad.Animations())
             {
-                // Add a render transform to the existing one just for animations
-                auto element = LayoutRoot().Children().GetAt(i);
-                TransformGroup tg;
-                tg.Children().Append(TranslateTransform());
-                tg.Children().Append(element.RenderTransform());
-                element.RenderTransform(tg);
+                DoubleAnimationUsingKeyFrames animation;
 
-                // Calculate the stagger for each animation. Note that this has a max
-                TimeSpan delay = std::min(std::chrono::duration_cast<TimeSpan>(ad.StaggerDelay() * i * ad.StaggerDelayFactor()), ad.DelayLimit());
+                // Start the animation at the right offset
+                SplineDoubleKeyFrame startSpline;
+                startSpline.KeyTime(KeyTimeHelper::FromTimeSpan(TimeSpan::zero()));
+                Storyboard::SetTarget(animation, element);
 
-                for (auto description : ad.Animations())
+                // Hold at that offset until the stagger delay is hit
+                SplineDoubleKeyFrame middleSpline;
+                middleSpline.KeyTime(KeyTimeHelper::FromTimeSpan(delay));
+
+                // Animation from delayed time to last time
+                SplineDoubleKeyFrame endSpline;
+                KeySpline endSplineKey;
+                endSplineKey.ControlPoint1(description.Control1());
+                endSplineKey.ControlPoint2(description.Control2());
+                endSpline.KeySpline(endSplineKey);
+                TimeSpan endKeyTime = description.Duration() + delay;
+                endSpline.KeyTime(KeyTimeHelper::FromTimeSpan(endKeyTime));
+
+                // Do the translation
+                if (description.Type() == PropertyAnimationType::Translation)
                 {
-                    DoubleAnimationUsingKeyFrames animation;
+                    startSpline.Value(ANIMATION_TRANSLATION_START);
+                    middleSpline.Value(ANIMATION_TRANSLATION_START);
+                    endSpline.Value(ANIMATION_TRANSLATION_END);
 
-                    // Start the animation at the right offset
-                    SplineDoubleKeyFrame startSpline;
-                    startSpline.KeyTime(KeyTimeHelper::FromTimeSpan(TimeSpan::zero()));
-                    Storyboard::SetTarget(animation, element);
-
-                    // Hold at that offset until the stagger delay is hit
-                    SplineDoubleKeyFrame middleSpline;
-                    middleSpline.KeyTime(KeyTimeHelper::FromTimeSpan(delay));
-
-                    // Animation from delayed time to last time
-                    SplineDoubleKeyFrame endSpline;
-                    KeySpline endSplineKey;
-                    endSplineKey.ControlPoint1(description.Control1());
-                    endSplineKey.ControlPoint2(description.Control2());
-                    endSpline.KeySpline(endSplineKey);
-                    TimeSpan endKeyTime = description.Duration() + delay;
-                    endSpline.KeyTime(KeyTimeHelper::FromTimeSpan(endKeyTime));
-
-                    // Do the translation
-                    if (description.Type() == PropertyAnimationType::Translation)
-                    {
-                        startSpline.Value(ANIMATION_TRANSLATION_START);
-                        middleSpline.Value(ANIMATION_TRANSLATION_START);
-                        endSpline.Value(ANIMATION_TRANSLATION_END);
-
-                        Storyboard::SetTargetProperty(animation, L"(UIElement.RenderTransform).(TransformGroup.Children)[0].X");
-                    }
-                    // Opacity
-                    else if (description.Type() == PropertyAnimationType::Opacity)
-                    {
-                        startSpline.Value(ANIMATION_OPACITY_START);
-                        middleSpline.Value(ANIMATION_OPACITY_START);
-                        endSpline.Value(ANIMATION_OPACITY_END);
-
-                        Storyboard::SetTargetProperty(animation, L"Opacity");
-                    }
-                    else
-                    {
-                        throw hresult_invalid_argument(L"Encountered an unexpected animation type.");
-                    }
-
-                    // Put the final animation together
-                    animation.KeyFrames().Append(startSpline);
-                    animation.KeyFrames().Append(middleSpline);
-                    animation.KeyFrames().Append(endSpline);
-                    enterAnimation.Children().Append(animation);
+                    Storyboard::SetTargetProperty(animation, L"(UIElement.RenderTransform).(TransformGroup.Children)[0].X");
                 }
+                // Opacity
+                else if (description.Type() == PropertyAnimationType::Opacity)
+                {
+                    startSpline.Value(ANIMATION_OPACITY_START);
+                    middleSpline.Value(ANIMATION_OPACITY_START);
+                    endSpline.Value(ANIMATION_OPACITY_END);
+
+                    Storyboard::SetTargetProperty(animation, L"Opacity");
+                }
+                else
+                {
+                    throw hresult_invalid_argument(L"Encountered an unexpected animation type.");
+                }
+
+                // Put the final animation together
+                animation.KeyFrames().Append(startSpline);
+                animation.KeyFrames().Append(middleSpline);
+                animation.KeyFrames().Append(endSpline);
+                enterAnimation.Children().Append(animation);
             }
         }
 

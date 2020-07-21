@@ -3,7 +3,7 @@ page_type: sample
 languages:
 - csharp
 - cpp
-- cppwinrt
+- cppcx
 products:
 - windows
 - windows-uwp
