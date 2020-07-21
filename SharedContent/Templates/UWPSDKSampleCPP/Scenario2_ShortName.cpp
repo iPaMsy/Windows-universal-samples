@@ -11,10 +11,11 @@
 
 #include "pch.h"
 #include "Scenario2_ShortName.h"
+#include "Scenario2_ShortName.g.cpp"
 
 using namespace winrt;
-using namespace Windows::Foundation;
-using namespace Windows::UI::Xaml;
+using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::UI::Xaml;
 
 namespace winrt::SDKTemplate::implementation
 {
