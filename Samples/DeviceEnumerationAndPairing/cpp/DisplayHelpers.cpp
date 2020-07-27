@@ -128,24 +128,6 @@ namespace SDKTemplate
         return ref new DeviceSelectorInfo("UPnP", DeviceClass::All, "System.Devices.Aep.ProtocolId:=\"{0e261de4-12f0-46e6-91ba-428607ccef64}\"", DeviceInformationKind::AssociationEndpoint);
     }
 
-    void AddVideoCastingIfSupported(Vector<DeviceSelectorInfo^>^ selectors)
-    {
-        try
-        {
-            selectors->Append(DeviceSelectorChoices::VideoCasting);
-        }
-        catch (Exception^ ex)
-        {
-            if (ex->HResult == HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED))
-            {
-                // Video casting not supported by the system.
-            }
-            else
-            {
-                throw;
-            }
-        }
-    }
 
     IVectorView<DeviceSelectorInfo^>^ DeviceSelectorChoices::DevicePickerSelectors::get()
     {
@@ -156,7 +138,7 @@ namespace SDKTemplate
         selectors->Append(BluetoothLEUnpairedOnly);
         selectors->Append(WiFiDirect);
         selectors->Append(PointOfServicePrinter);
-        AddVideoCastingIfSupported(selectors);
+        selectors->Append(VideoCasting);
         selectors->Append(DialAllApps);
 
         return selectors->GetView();
@@ -179,7 +161,7 @@ namespace SDKTemplate
         selectors->Append(BluetoothLE);
         selectors->Append(WiFiDirect);
         selectors->Append(PointOfServicePrinter);
-        AddVideoCastingIfSupported(selectors);
+        selectors->Append(VideoCasting);
         selectors->Append(DialAllApps);
         selectors->Append(Wsd);
         selectors->Append(Upnp);
@@ -194,7 +176,7 @@ namespace SDKTemplate
         selectors->Append(BluetoothLEPairedOnly);
         selectors->Append(WiFiDirectPairedOnly);
         selectors->Append(PointOfServicePrinter);
-        AddVideoCastingIfSupported(selectors);
+        selectors->Append(VideoCasting);
         selectors->Append(DialAllApps);
         selectors->Append(Wsd);
         selectors->Append(Upnp);
@@ -209,7 +191,7 @@ namespace SDKTemplate
         selectors->Append(BluetoothLE);
         selectors->Append(WiFiDirect);
         selectors->Append(PointOfServicePrinter);
-        AddVideoCastingIfSupported(selectors);
+        selectors->Append(VideoCasting);
         selectors->Append(Wsd);
         selectors->Append(Upnp);
 

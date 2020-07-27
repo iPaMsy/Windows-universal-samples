@@ -195,18 +195,6 @@ namespace SDKTemplate
             }
         }
 
-        public static void AddVideoCastingIfSupported(List<DeviceSelectorInfo> selectors)
-        {
-            try
-            {
-                selectors.Add(VideoCasting);
-            }
-            catch (Exception ex) when (ex.HResult == unchecked((int)0x80070032)) // HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED)
-            {
-                // Video casting is not supported by the system.
-            }
-        }
-
         public static List<DeviceSelectorInfo> DevicePickerSelectors
         {
             get
@@ -219,7 +207,7 @@ namespace SDKTemplate
                 selectors.Add(BluetoothLEUnpairedOnly);
                 selectors.Add(WiFiDirect);
                 selectors.Add(PointOfServicePrinter);
-                AddVideoCastingIfSupported(selectors);
+                selectors.Add(VideoCasting);
                 selectors.Add(DialAllApps);
 
                 return selectors;
@@ -250,7 +238,7 @@ namespace SDKTemplate
                 selectors.Add(BluetoothLE);
                 selectors.Add(WiFiDirect);
                 selectors.Add(PointOfServicePrinter);
-                AddVideoCastingIfSupported(selectors);
+                selectors.Add(VideoCasting);
                 selectors.Add(DialAllApps);
                 selectors.Add(Wsd);
                 selectors.Add(Upnp);
@@ -269,7 +257,7 @@ namespace SDKTemplate
                 selectors.Add(BluetoothLEPairedOnly);
                 selectors.Add(WiFiDirectPairedOnly);
                 selectors.Add(PointOfServicePrinter);
-                AddVideoCastingIfSupported(selectors);
+                selectors.Add(VideoCasting);
                 selectors.Add(DialAllApps);
                 selectors.Add(Wsd);
                 selectors.Add(Upnp);
@@ -291,7 +279,7 @@ namespace SDKTemplate
                 selectors.Add(BluetoothLE);
                 selectors.Add(WiFiDirect);
                 selectors.Add(PointOfServicePrinter);
-                AddVideoCastingIfSupported(selectors);
+                selectors.Add(VideoCasting);
                 selectors.Add(Wsd);
                 selectors.Add(Upnp);
 
